@@ -22,26 +22,27 @@ class ELTMcell(nn.Module):
         # gamma(γ): γ=1-(α*o_gate+β*o_gate),  γ=o_gate*gamma_p, (α_p+β_p+γ_p) = o_gate^(-1)
 
     def forward(self, x: torch.Tensor, hidden: torch.Tensor):
-        # 组合重置输入
+        # Combined reset input
         input_gates = self.input_in(x) + self.hidden_in(hidden)
         i_gate, h_gate = input_gates.chunk(2, dim=-1)
         i_gate = torch.sigmoid(i_gate)  # Candidate reset input gate
         h_gate = torch.tanh(h_gate)  # Candidate hidden state
         ch_n = i_gate * h_gate  # Reset hidden state
 
-        # 单独重置输入
+        # Separate reset input
         only_x_gate = self.only_x(x)
         x = torch.tanh(only_x_gate)
         only_h_gate = self.only_h(hidden)
         hidden = torch.tanh(only_h_gate)
 
-        # 更新输出
+        # Update output
         output_gates = self.input_out(x) + self.hidden_out(hidden) + self.candidate_hidden_out(ch_n)
         o_gate = torch.sigmoid(output_gates)  # Update output gate
         alpha = self.alpha_p(o_gate)  # Update individual inputs
         beta = self.beta_p(o_gate)  # Update separate past hidden states
         gamma = 1 - alpha - beta  # Update the current candidate hidden state
         h_next = alpha * x + beta * hidden + gamma * ch_n  # The final hidden state output
+
         return h_next
 
 # multilayer ELTM
@@ -66,7 +67,7 @@ class ELTM(nn.Module):
             (hidden) = state
             hidden = list(torch.unbind(hidden))
 
-        # 收集每个时间步骤的输出
+        # Collect the output for each time step
         out = []
         for t in range(seq_len):
             # The input at the first moment is x itself
@@ -101,3 +102,8 @@ class ELTMModel(nn.Module):
         out = torch.transpose(out, 2, 1)
         out = self.linear2(out)
         return out
+
+
+
+
+
