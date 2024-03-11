@@ -1,6 +1,6 @@
 （Efficient Long Term Memory）ELTM公式
 
-![1710125123667](https://github.com/weirdoZHANG/Efficient-Long-Term-Memory/assets/142579062/b52ae33a-81d7-46d1-bc75-854f6c96989c)
+![1710125274984](https://github.com/weirdoZHANG/Efficient-Long-Term-Memory/assets/142579062/dfb5c90a-d909-467d-8803-1e2d8aeb4c44)
 
 【代码里是英文】
 候选重置输入门->
