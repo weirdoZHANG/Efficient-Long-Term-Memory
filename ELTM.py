@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from typing import Optional
 
-# Efficient Long Term Memory: ELTM, Should be used flexibly
+# Efficient Long Term Memory: ELTM
 class ELTMcell(nn.Module):
     def __init__(self, input_size: int, hidden_size: int):
         super(ELTMcell, self).__init__()
@@ -85,25 +85,13 @@ class ELTM(nn.Module):
         hidden = torch.stack(hidden)
         return out, hidden
 
-# Define the input window and the prediction window
-lookback_len = 36
-horizon_len = 24
-class ELTMModel(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size):
-        super(ELTMModel, self).__init__()
-        self.eltm = ELTM(input_size, hidden_size, num_layers=1)
-        self.linear1 = nn.Linear(lookback_len, horizon_len)
-        self.linear2 = nn.Linear(hidden_size, output_size)
-
-    def forward(self, x):
-        out, _ = self.eltm(x)
-        out = torch.transpose(out, 2, 1)
-        out = self.linear1(out)
-        out = torch.transpose(out, 2, 1)
-        out = self.linear2(out)
-        return out
-
-
+if __name__ == "__main__":
+    ELTM = ELTM(10, 20, 2)
+    input = torch.randn(5, 3, 10)
+    output, _ = ELTM(input)
+    print(output.shape)  # ELTM Output dimension: torch.Size([5, 3, 20])
+    # If you want to do an actual prediction task, take the output at the last moment and use one Linear(hidden_size, output_size)
+    # ELTM plugs and plays
 
 
 
